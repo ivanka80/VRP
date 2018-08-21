@@ -1,0 +1,43 @@
+<apex:page standardController="Product_Table__c" extensions="ProductInfoControler">
+    <apex:slds />
+    <apex:form >
+    <apex:repeat value="{!phonesInfo}" var="p">
+	        <div class="slds-align_absolute-center">
+                <h1 class="slds-text-heading_large">  
+               		<apex:outputText >{!p.Name}</apex:outputText> 
+                </h1>
+        	</div>
+			
+			<div class="slds-grid slds-gutters">
+               <div class="slds-col">
+                	<apex:image url="{!p.Image_Url__c}" width="200" height="300" />
+               </div>
+                
+                <div class="slds-col">
+                    	<div>
+                        	<H2 class="slds-text-heading_small slds-text-color_success">AMOUNT:<br/> </H2>
+                         	<apex:outputText >{!p.Units_Available__c} </apex:outputText>  
+                    	</div> <br/> 
+                    
+                    	<div>
+                            <H2 class="slds-text-heading_small slds-text-color_success">TITLE:<br/>  </H2>   
+                                <apex:outputText >{!p.Name}   </apex:outputText>
+                         </div>	<br/> 
+                                                            	
+                    	<div>
+                            <H2 class="slds-text-heading_small slds-text-color_success">DESCRIPTION:<br/> </H2> 
+                            <apex:outputText > {!p.Product_Description__c} </apex:outputText> 
+                              
+                   		</div> <br/> 
+                                 
+                        <div class="slds-card__footer slds-align_absolute-center" > 
+  	                          	<apex:commandButton styleClass="slds-button slds-button_neutral" action="{!toShopping}" value="To Shopping" />
+                                <apex:outputLink value="/apex/BuyFormPage" styleClass="slds-button slds-button_brand">Buy
+                           			<apex:param name="phoneId" value="{!p.Id}"/>	
+                            	</apex:outputLink>    
+                        </div>
+                </div>
+            </div>
+        </apex:repeat>  
+    </apex:form>   
+</apex:page>
