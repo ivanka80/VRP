@@ -1,0 +1,27 @@
+public class ProductInfoControler{
+    
+    public id phoneId{get; set;}
+     
+public List<Product_Table__c> getPhonesInfo() {
+     List<Product_Table__c> phonesInfo = [SELECT Id, Image_Url__c, Product_Description__c,
+                                          Name, UnitPrice__c, Units_Available__c 
+                                          FROM Product_Table__c WHERE id=:phoneId];
+      
+        return phonesInfo;
+    }
+    
+     public ProductInfoControler(ApexPages.StandardController stdController) {
+        this.phoneId = apexpages.currentpage().getParameters().get('phoneId');
+     }
+    
+    public PageReference buy() {
+       PageReference ref = new PageReference('/apex/BuyFormPage');
+     return ref;
+    }
+    
+    public PageReference toShopping() {
+        PageReference ref1 = new PageReference('/apex/MobilePhones');
+     return ref1;
+    }
+    
+}
