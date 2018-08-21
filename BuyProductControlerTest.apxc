@@ -1,0 +1,133 @@
+@isTest
+public class BuyProductControlerTest {
+    
+@isTest
+    public static void PhoneInfoTest() {
+        Product_Table__c infoPhoneTable = new Product_Table__c();
+        infoPhoneTable.Image_Url__c = 'https://www.eurosport.ru/';    
+    	infoPhoneTable.Product_Description__c = 'Product Information test'; 
+    	infoPhoneTable.Name = 'Nokia';    
+   	 	infoPhoneTable.UnitPrice__c = 600;
+    	insert infoPhoneTable;
+       
+        Product_Table__c BuyTestList = new Product_Table__c(); 
+        
+        ApexPages.currentPage().getParameters().put('phoneId', infoPhoneTable.id);
+        BuyProductControler buyProdCtr = new BuyProductControler(new ApexPages.StandardController(BuyTestList));
+               
+        System.assertEquals(infoPhoneTable.Id != null, true);
+        System.assertEquals('https://www.eurosport.ru/', infoPhoneTable.Image_Url__c);
+ 		System.assertEquals('Nokia', infoPhoneTable.Name);
+        System.assertEquals(600, infoPhoneTable.UnitPrice__c);
+    }    
+    
+@isTest
+    public static void InputFieldsTest() {
+        Contact testCnt = new Contact();
+        testCnt.FirstName = 'Jack';
+        testCnt.LastName = 'Johnes';
+        testCnt.Email = 'jack@mail.com';
+        insert testCnt;
+        
+        Product_Table__c testPrTable = new Product_Table__c();
+        testPrTable.Image_Url__c = 'https://www.onliner.by/';    
+    	testPrTable.Product_Description__c = 'Buy test'; 
+        testPrTable.Units_Available__c = 10;
+    	testPrTable.Name = 'LG';    
+   	 	testPrTable.UnitPrice__c = 700;
+    	insert testPrTable;
+          
+        Product_Table__c pt = new Product_Table__c();        
+        
+        ApexPages.currentPage().getParameters().put('phoneId', testPrTable.id);
+        BuyProductControler buyProdCtr = new BuyProductControler(new ApexPages.StandardController(pt));
+        
+        buyProdCtr.testCont.FirstName = 'Ivan';
+        buyProdCtr.testCont.LastName = 'Ivanov';
+        buyProdCtr.testCont.Email = 'jack@mail.com';
+        buyProdCtr.OrdTable.Units__c = 1;
+        
+        Order_Table__c orTable = new Order_Table__c();
+       	buyProdCtr.orderRegistration();
+                
+        Contact tstCon = [SELECT Id, FirstName, LastName, Email FROM Contact WHERE Email =: 'jack@mail.com'];
+               
+        System.assertEquals('Ivan', tstCon.FirstName);
+        System.assertEquals('Ivanov', tstCon.LastName);
+        System.assertEquals('jack@mail.com', tstCon.Email);
+        System.assertEquals(null, buyProdCtr.ordTable.Order_Amount__c );
+     
+    }
+    
+
+@isTest 
+    public static void PageRefTest() {
+              
+        Product_Table__c testTable1 = new Product_Table__c();
+    	testTable1.Image_Url__c = 'https://www.tut.by/';    
+   	 	testTable1.Product_Description__c = 'Product test desription '; 
+    	testTable1.Name = 'Samsung';    
+    	testTable1.UnitPrice__c = 1000;
+    	insert testTable1;
+		
+         Product_Table__c pt1 = new  Product_Table__c();
+        PageReference pageRef = Page.BuyFormPage;
+        Test.setCurrentPage(pageRef);
+        
+        ApexPages.currentPage().getParameters().put('phoneId', testTable1.id);
+        BuyProductControler buyCtr = new BuyProductControler(new ApexPages.StandardController(pt1));
+
+         ApexPages.currentPage().getParameters().put('BuyFormPage', testTable1.id);
+        System.assertEquals('/apex/MobilePhones', buyCtr.toShopping().getUrl());
+      
+    } 
+    
+@isTest
+    public static void messageTest() {
+        Test.setCurrentPage(Page.BuyFormPage);
+        
+        Product_Table__c testTable1 = new Product_Table__c();
+    	testTable1.Image_Url__c = 'https://www.tut.by/';    
+   	 	testTable1.Product_Description__c = 'Product test desription '; 
+    	testTable1.Name = 'Samsung';    
+    	testTable1.UnitPrice__c = 1000;
+    	insert testTable1;
+        
+        Product_Table__c pt1 = new Product_Table__c();  
+        
+        ApexPages.currentPage().getParameters().put('phoneId', testTable1.id);
+        BuyProductControler buyPrCtr = new BuyProductControler(new ApexPages.StandardController(pt1));
+   		buyPrCtr.testCont.Email = '23@mail.com';
+        
+       	ApexPages.currentPage().getParameters().put('BuyFormPage', testTable1.id);
+        System.assertEquals(false, buyPrCtr.checkInputFields()); 
+    }
+    
+@isTest
+    public static void buyProductTest() {
+       
+        Product_Table__c testTable2 = new Product_Table__c();
+    	testTable2.Image_Url__c = 'https://www.tut.by/';    
+   	 	testTable2.Product_Description__c = 'Product test desription '; 
+    	testTable2.Name = 'Samsung';    
+    	testTable2.UnitPrice__c = 1000;
+    	insert testTable2;
+        
+        Contact testCnt = new Contact();
+        testCnt.FirstName = 'Jack';
+        testCnt.LastName = 'Johnes';
+        testCnt.Email = 'jack@mail.com';
+        insert testCnt;
+        
+        Order_Table__c orTable = new Order_Table__c(Order_Amount__c = 1000, Units__c = 1, Product_Table__c = testTable2.id); 
+        insert orTable;
+        
+        Product_Table__c pt1 = new Product_Table__c(); 
+        ApexPages.currentPage().getParameters().put('phoneId', testTable2.id);
+        BuyProductControler buyPrCtr = new BuyProductControler(new ApexPages.StandardController(pt1));
+        
+        buyPrCtr.orderRegistration();
+        System.assertEquals(0, buyPrCtr.ordTable.Units__c);
+        
+    }    
+}
