@@ -1,0 +1,81 @@
+@isTest
+public class ProductInfoControlerTest {
+ 
+@isTest    
+    public static void PhonesInfoTest() {   
+        Product_Table__c infoTable = new Product_Table__c();
+        infoTable.Image_Url__c = 'https://www.eurosport.ru/';    
+    	infoTable.Product_Description__c = 'Product Information test'; 
+    	infoTable.Name = 'Nokia';    
+   	 	infoTable.UnitPrice__c = 600;
+    	insert infoTable;
+                      
+        PageReference pageRef = Page.ProductInfo;
+		Test.setCurrentPage(pageRef);
+              
+        ProductInfoControler ProdInfoCtrl = new ProductInfoControler(new ApexPages.StandardController(infoTable));
+        ApexPages.currentPage().getParameters().put('askProductInfo', infoTable.id);
+        System.assertNotEquals(null, infoTable.id);
+        System.assertEquals('https://www.eurosport.ru/', infoTable.Image_Url__c);
+ 		System.assertEquals('Nokia', infoTable.Name);
+        System.assertEquals(600, infoTable.UnitPrice__c);
+      }
+    
+@isTest 
+
+    public static void InfoTest() {
+       
+        Product_Table__c infoTableTst = new Product_Table__c();
+        infoTableTst.Image_Url__c = 'https://www.eurosport.ru/';    
+    	infoTableTst.Product_Description__c = 'Product Information test'; 
+    	infoTableTst.Name = 'Nokia';    
+   	 	infoTableTst.UnitPrice__c = 600;
+    	insert infoTableTst;
+        
+        Product_Table__c ptc = new Product_Table__c();
+        
+        ApexPages.currentPage().getParameters().put('phoneId', infoTableTst.id);
+        ProductInfoControler prodInfoCtrl = new ProductInfoControler(new ApexPages.StandardController(ptc)); 
+        prodInfoCtrl.getPhonesInfo();
+              
+      Product_Table__c infoTable = [SELECT Id, Image_Url__c, Product_Description__c, Name,  UnitPrice__c FROM Product_Table__c];
+        
+        System.assertEquals('https://www.eurosport.ru/', infoTable.Image_Url__c);
+        System.assertEquals('Nokia', infoTable.Name);
+   }
+    
+@isTest
+
+    public static void ToShoppingPageReferenceTest(){
+        Product_Table__c testShopping = new Product_Table__c();
+    	testShopping.Image_Url__c = 'https://www.tut.by/';    
+   	 	testShopping.Product_Description__c = 'Shopping test'; 
+    	testShopping.Name = 'Samsung';    
+    	testShopping.UnitPrice__c = 1000;
+    	insert testShopping;
+        
+        ProductInfoControler ShoppingCtrl = new ProductInfoControler(new ApexPages.StandardController(testShopping)); 
+        PageReference pageRef = Page.BuyFormPage;
+        Test.setCurrentPage(pageRef);
+       
+         ApexPages.currentPage().getParameters().put('BuyFormPage', testShopping.id);
+        System.assertEquals('/apex/MobilePhones', ShoppingCtrl.ToShopping().getUrl());
+    }    
+    @isTest 
+    
+    public static void BuyProductTest() {
+    Product_Table__c buyProductTest = new Product_Table__c();
+    	buyProductTest.Image_Url__c = 'https://www.pressball.by/';    
+   	 	buyProductTest.Product_Description__c = 'Buy product test'; 
+    	buyProductTest.Name = 'Samsung';    
+    	buyProductTest.UnitPrice__c = 650;
+    	insert buyProductTest;
+        
+        ProductInfoControler BuyPrdCtrl = new ProductInfoControler(new ApexPages.StandardController(buyProductTest)); 
+        PageReference pageRef = Page.BuyFormPage;
+        Test.setCurrentPage(pageRef);
+    	
+       ApexPages.currentPage().getParameters().put('BuyFormPage', buyProductTest.id);
+        System.assertEquals('/apex/BuyFormPage', BuyPrdCtrl.buy().getUrl());
+   }
+}
