@@ -1,85 +1,82 @@
 public class BuyProductControler {
     
     public id phoneId{get; set;}
-  	public Contact testCont {get; set;}
+    public Contact testCont {get; set;}
     public Product_Table__c productInformation {get; set;}
     public Order_Table__c ordTable{get; set;}
     public Integer totalNumber {get; set;}
-        
+    
     public BuyProductControler(ApexPages.StandardController stdController) {
         this.phoneId = apexpages.currentpage().getParameters().get('phoneId');
-     	productInformation = getPhoneInfo();
+        productInformation = getPhoneInfo();
         ordTable = new Order_Table__c(Order_Amount__c = 0, Units__c = 0);
         testCont = new Contact();
-      }
-   
+    }
+    
     public Product_Table__c getPhoneInfo() {
-    Product_Table__c prodInfo = [SELECT Id, Name, UnitPrice__c, Units_Available__c  
-                                                      FROM Product_Table__c 
-                                                      WHERE id=:phoneId LIMIT 1];
-    return prodInfo;
+        Product_Table__c prodInfo = [SELECT Id, Name, UnitPrice__c, Units_Available__c  
+                                     FROM Product_Table__c 
+                                     WHERE id=:phoneId LIMIT 1];
+        return prodInfo;
     }
     
     
     public Boolean checkInputFields() {
         if ((testCont.FirstName == null) || (testCont.LastName == null) || (testCont.Email == null) ) {
-        ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR, 'Please, chek the following fields: Email, First Name and Last Name. All fields must be completed'));  
-        return false;
+            ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR, 'Please, check the following fields: Unit Count, Email, First Name and Last Name. All fields must be completed'));  
+            return false;
         }    
         else { 
-         return true;
+            return true;
         }
     }
-   
+    
     public void ustTotalAmount(){
         if( ordTable.Units__c == null) {
             ordTable.Units__c = 0;
-          }
-         ordTable.Order_Amount__c = ordTable.Units__c * productInformation.UnitPrice__c;
         }
+        ordTable.Order_Amount__c = ordTable.Units__c * productInformation.UnitPrice__c;
+    }
     
     
-    public boolean orderRegistration() {
+    public void orderRegistration() {
         if (checkInputFields()) {
             if (ordTable.Units__c <= 0 && ordTable.Units__c > productInformation.Units_Available__c) {
-             ApexPages.addmessage(new ApexPages.message(ApexPages.severity.CONFIRM, 'You can buy maximum '+  productInformation.Units_Available__c +'. Please, put correct numbers of goods you want to buy.'));  
-            } else { 
-            // update or create contact     
-            	List<Contact> checkCon = [SELECT Id, FirstName, LastName, Email FROM Contact WHERE Email=:testCont.Email LIMIT 1];
-            	if (checkCon.size() != 0) {
-            		checkCon[0].FirstName = testCont.FirstName;
-            		checkCon[0].LastName = testCont.LastName;
-                	ordTable.Contact__c = checkCon[0].Id;  
-                	update checkCon;
-		 		} else  {
-              	  	insert testCont;
-               	 	ordTable.Contact__c = testCont.Id;
-            	 }
-        	//put data to Order Table    
-                         
-            	ustTotalAmount();
-            	ordTable.Product_Table__c = phoneId;
-            	insert ordTable;
+                ApexPages.addmessage(new ApexPages.message(ApexPages.severity.CONFIRM, 'You can buy maximum '+  productInformation.Units_Available__c +'. Please, put correct numbers of goods you want to buy.'));  
+            } else if (ordTable.Units__c >=1) { 
+                // update or create contact     
+                List<Contact> checkCon = [SELECT Id, FirstName, LastName, Email FROM Contact WHERE Email=:testCont.Email LIMIT 1];
+                if (checkCon.size() != 0) {
+                    checkCon[0].FirstName = testCont.FirstName;
+                    checkCon[0].LastName = testCont.LastName;
+                    ordTable.Contact__c = checkCon[0].Id;  
+                    update checkCon;
+                } else  {
+                    insert testCont;
+                    ordTable.Contact__c = testCont.Id;
+                    
+                }
+                //put data to Order Table    
+                
+                ustTotalAmount();
+                ordTable.Product_Table__c = phoneId;
+                insert ordTable;
                 productInformation.Units_Available__c = productInformation.Units_Available__c - ordTable.Units__c;
                 update productInformation;    
-            }
+                testCont = new Contact();
+                ordTable = new Order_Table__c();
+                ApexPages.addmessage(new ApexPages.message(ApexPages.severity.CONFIRM, 'Your order was successfully completed. You bought a ' +
+                                                           productInformation.Name + '. Аmount: ' + ordTable.Units__c + ' pcs .' + ' Total price: ' + ordTable.Order_Amount__c + ' $'));
+            }  
+            ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR, 'Please, check Unit Count field.'));         
         } else {
-        	return false;    
+            ApexPages.addmessage(new ApexPages.message(ApexPages.severity.ERROR, 'Please, chek the following fields: Email, First Name and Last Name. All fields must be completed'));    
         }
-   		return true;
+        
     }
     
-    public void buyProduct () {
-        if (orderRegistration()) {
-		ordTable = new Order_Table__c(Order_Amount__c = 0, Units__c = 0);
-        testCont = new Contact();            
-        ApexPages.addmessage(new ApexPages.message(ApexPages.severity.CONFIRM, 'Your order was successfully completed. You bought a ' +
-        productInformation.Name + '. Аmount: ' + ordTable.Units__c + ' pcs .' + ' Total price: ' + ordTable.Order_Amount__c + ' $'));    
-        }
-    }
-
     public PageReference toShopping() {
         PageReference ref = new PageReference('/apex/MobilePhones');
-     return ref;
+        return ref;
     }
 }
