@@ -1,0 +1,82 @@
+<apex:page standardController="Product_Table__c" extensions="BuyProductControler">
+<apex:slds />    
+    <apex:form >
+        <apex:pageMessages />
+      
+    	<div class="slds-grid slds-gutters">
+  			<div class="slds-col slds-align_absolute-center">
+               <H2 class="slds-text-heading_medium">
+                   	<apex:outputText >Contact Information </apex:outputText> 
+               </H2> 
+            </div>
+       
+        	<div class="slds-col ">
+                <H2 class="slds-text-heading_medium slds-align_absolute-center">
+                    <apex:outputText >Product Information</apex:outputText> 
+                </H2>
+           </div>
+        </div> <br/>  
+        
+       <div> 
+        <div class="slds-grid slds-gutters"> 
+         	<div class="slds-col"> 
+                
+                	<div style="margin:1%; padding:5px" class="slds-align_absolute-center">
+                    	<apex:outputText style="padding-left:2.1em">Email</apex:outputText> 
+                      	<apex:inputField style="margin:1%" value="{!testCont.Email} "/> 
+                  	</div> 
+               
+               	    <div  style="margin:1%; padding:5px" class="slds-align_absolute-center">
+                     	<apex:outputText > First Name </apex:outputText> 
+                      	<apex:inputField style="margin:1%" value="{!testCont.FirstName}"/>  
+                   </div> 
+
+                    <div style="margin:1%; padding:5px" class="slds-align_absolute-center">
+                        <apex:outputText > Last Name </apex:outputText> 
+                        <apex:inputField style="margin:1%" value="{!testCont.LastName}" required="false"/>   
+                   	</div>
+            </div>
+            
+         
+         	<div class="slds-col slds-grid">    
+             	<apex:repeat value="{!productInformation}" var="pi">
+                    
+                    <div  style="margin:1%; padding:5px" class="slds-size_1-of-2" >
+                        <div class="slds-text-align_right"> Product Name </div> <br/>
+                    	 <div class="slds-text-align_right"> Cost </div> <br/>
+                         <div class="slds-text-align_right"> Unit Count </div> <br/>
+                         <div class="slds-text-align_right"> Total Amount </div> <br/>
+                    </div> 
+                    
+                        <div  style="margin:1%; padding:5px" class="slds-size_1-of-2" >
+                        <div class="slds-text-align_left">
+                        <apex:outputField value="{!pi.Name}"/>	   
+                        </div>  <br/>
+                    
+                         <div class="slds-text-align_left">
+                        <apex:outputField value="{!pi.UnitPrice__c}"/>	   
+                        </div> <br/>  
+                            
+                         <div class="slds-text-align_left">
+                          <apex:inputField value="{!ordTable.Units__c}"> 
+                        	<apex:actionSupport event="onchange" action="{!ustTotalAmount}"  rerender="TotalAmount"/>
+                            </apex:inputField>
+                          </div> <br/>   
+                            
+                            <div class="slds-text-align_left">
+                            <apex:outputField value="{!ordTable.Order_Amount__c}" id="TotalAmount" />
+                            </div>
+                       </div>
+
+        </apex:repeat>  
+        </div>
+      </div>    
+
+        </div>
+    <div class="slds-card__footer slds-align_absolute-center" > 
+  	  <apex:commandButton styleClass="slds-button slds-button_neutral" action="{!toShopping}" value="To Shopping" />
+        <apex:commandButton styleClass="slds-button slds-button_brand" action="{!buyProduct}" value="Buy" />    
+   
+        </div>
+    </apex:form>	
+</apex:page>
