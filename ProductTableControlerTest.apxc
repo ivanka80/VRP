@@ -1,0 +1,47 @@
+@isTest
+public class ProductTableControlerTest {
+   
+@isTest 
+    public static void phonesTest() {
+    ProductTableControler prodTableCtrl = new ProductTableControler();   
+        
+    Product_Table__c testTable = new Product_Table__c();
+    testTable.Image_Url__c = 'https://training-vrpconsulting.cs20.force.com/s/';    
+    testTable.Product_Description__c = 'Product test desription '; 
+    testTable.Name = 'Samsung';    
+    testTable.UnitPrice__c = 500;
+    insert testTable;
+        
+        PageReference pageRef = Page.MobilePhones;
+		Test.setCurrentPage(pageRef);
+        
+        
+        List<Product_Table__c> testList = prodTableCtrl.getPhones();
+        System.assertEquals(1, testList.size());
+        System.assertNotEquals(null, testList[0].Id);
+        System.assertEquals('https://training-vrpconsulting.cs20.force.com/s/', testList[0].Image_Url__c);
+ 		System.assertEquals('Samsung', testList[0].Name);
+        System.assertEquals(500, testList[0].UnitPrice__c);
+  
+    }
+    
+@isTest 
+    public static void PageReferenceTest() {
+              
+        Product_Table__c testTable1 = new Product_Table__c();
+    	testTable1.Image_Url__c = 'https://www.tut.by/';    
+   	 	testTable1.Product_Description__c = 'Product test desription '; 
+    	testTable1.Name = 'Samsung';    
+    	testTable1.UnitPrice__c = 1000;
+    	insert testTable1;
+
+        ProductTableControler phoneInfoPageCtrl = new ProductTableControler();
+        PageReference pageRef = Page.BuyFormPage;
+        Test.setCurrentPage(pageRef);
+       
+         ApexPages.currentPage().getParameters().put('BuyFormPage', testTable1.id);
+        System.assertEquals('apex/BuyFormPage', phoneInfoPageCtrl.buy().getUrl());
+        
+    }
+  
+}
