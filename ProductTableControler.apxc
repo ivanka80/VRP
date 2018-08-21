@@ -1,0 +1,17 @@
+public class ProductTableControler {
+    
+    
+  public List<Product_Table__c> getPhones() {
+     List<Product_Table__c> phones = [SELECT Id, Image_Url__c, Product_Description__c,
+                                          Name, UnitPrice__c FROM Product_Table__c ORDER by Name ASC];
+      for(Product_Table__c prod : phones) {
+            prod.Product_Description__c = prod.Product_Description__c.abbreviate(100);
+           }
+        return phones;
+    }
+    
+   public PageReference buy() {
+       PageReference ref = new PageReference('/apex/BuyFormPage');
+     return ref;
+    }
+ }
