@@ -1,0 +1,37 @@
+<apex:page controller="ProductTableControler">
+    <apex:slds />
+    <apex:form >
+		<apex:pageBlock title="Product List" >   
+        	<apex:pageblockTable value="{!phones}" var="ph">
+           
+    			<apex:column styleClass="slds-text-align_center" headerValue="IMAGE">
+                	<apex:image url="{!ph.Image_Url__c}" width="100" height="120" />
+            	</apex:column>	
+                
+            	<apex:column styleClass="slds-text-align_center" headerValue="TITLE">
+                	<apex:outputLink value="ProductInfo">{!ph.Name}
+                    	<apex:param name="phoneId" value="{!ph.Id}"/>
+                    </apex:outputLink>    
+                </apex:column>
+                
+            	<apex:column styleClass="slds-text-align_center" headerValue="DESCRIPTION">
+                	{!ph.Product_Description__c}
+                	<apex:outputLink value="ProductInfo">more
+                    <apex:param name="phoneId" value="{!ph.Id}"/>
+                    </apex:outputLink>>
+            	</apex:column>
+                
+            	<apex:column styleClass="slds-text-align_center" headerValue="PRICE" width="10%">
+                	<h1>${!ph.UnitPrice__c} </h1> 
+           		</apex:column>
+                
+            	<apex:column >
+               		<apex:outputLink value="/apex/BuyFormPage" styleClass="slds-button slds-button_brand">Buy
+                    	<apex:param name="phoneId" value="{!ph.Id}"/>	
+                    </apex:outputLink> 
+            	</apex:column>
+                          
+    	</apex:pageblockTable>
+      </apex:pageBlock>   
+   </apex:form> 
+</apex:page>
